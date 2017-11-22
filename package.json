@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "rollup": "^0.51.8",
+    "rollup-plugin-typescript2": "^0.8.1",
+    "typescript": "^2.6.1"
+  },
+  "dependencies": {}
+}
