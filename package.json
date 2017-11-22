@@ -1,8 +1,18 @@
 {
+  "scripts": {
+    "build": "rollup -c"
+  },
   "devDependencies": {
     "rollup": "^0.51.8",
     "rollup-plugin-typescript2": "^0.8.1",
+    "tslint": "^5.8.0",
     "typescript": "^2.6.1"
   },
-  "dependencies": {}
+  "name": "rehash",
+  "version": "0.1",
+  "description": "Lightweight Redux, for the hash fragment",
+  "main": "src/main.ts",
+  "repository": "https://github.com/jtompkins/rehash.git",
+  "author": "Joshua Tompkins <josh@joshtompkins.com>",
+  "license": "MIT"
 }
