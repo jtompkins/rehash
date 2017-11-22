@@ -3,6 +3,12 @@
     "target": "es5",
     "module": "es2015",
     "noImplicitAny": true,
-    "noImplicitReturns": true
-  }
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts", "**/*.spec.tsx"],
+  "filesGlob": ["typings/index.d.ts", "src/**/*"]
 }
