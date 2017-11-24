@@ -1,0 +1,12 @@
+{
+  "ignore": ["node_modules/**"],
+  "env": {
+    "development": {
+      "presets": [["env", { "modules": false }]],
+      "plugins": ["external-helpers"]
+    },
+    "test": {
+      "presets": ["env"]
+    }
+  }
+}

@@ -4,13 +4,17 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@types/jest": "^21.1.7",
+    "babel-core": "^6.26.0",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.11.0",
+    "eslint-config-prettier": "^2.8.0",
+    "eslint-plugin-prettier": "^2.3.1",
     "jest": "^21.2.1",
+    "prettier": "^1.8.2",
     "rollup": "^0.51.8",
-    "rollup-plugin-typescript2": "^0.8.1",
-    "ts-jest": "^21.2.3",
-    "tslint": "^5.8.0",
-    "typescript": "^2.6.1"
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-node-resolve": "^3.0.0"
   },
   "name": "rehash",
   "version": "0.1",
@@ -18,12 +22,5 @@
   "main": "src/main.ts",
   "repository": "https://github.com/jtompkins/rehash.git",
   "author": "Joshua Tompkins <josh@joshtompkins.com>",
-  "license": "MIT",
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testMatch": ["<rootDir>/src/**/*.spec.(ts|tsx)"],
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json"]
-  }
+  "license": "MIT"
 }
