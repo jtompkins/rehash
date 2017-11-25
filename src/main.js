@@ -1,5 +1,5 @@
-import foo from './foo'
+import Store from './store'
+import DateSerializer from './serializers/dateSerializer'
+import FakeHashRepository from './fakes/fakeHashRepository'
 
-export default () => {
-  console.log(`${foo}`)
-}
+export { Store, DateSerializer, FakeHashRepository }

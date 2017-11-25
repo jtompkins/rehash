@@ -1,7 +1,8 @@
 {
   "scripts": {
     "build": "rollup -c",
-    "test": "jest"
+    "test": "jest",
+    "testWithDebug": "node --inspect-brk node_modules/.bin/jest --runInBand"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
