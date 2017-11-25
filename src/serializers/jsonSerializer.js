@@ -3,6 +3,6 @@ export default {
     return JSON.parse(jsonString)
   },
   serialize: val => {
-    return val.toJson()
+    return JSON.stringify(val)
   },
 }
