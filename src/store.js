@@ -2,9 +2,20 @@ import HashRepository from './hashRepository'
 
 export default class Store {
   constructor(shape, hashRepository) {
+    if (shape === undefined || shape === null) {
+      throw new Error('A shape for the store must be provided')
+    }
+
     this.listeners = []
     this.shape = shape
     this.repo = hashRepository || new HashRepository()
+
+    Object.entries(shape).forEach(([key, serializer]) => {
+      Object.defineProperty(this, key, {
+        get: () => this._get(key),
+        set: value => this._set(key, value),
+      })
+    })
   }
 
   subscribe(func) {
@@ -29,7 +40,7 @@ export default class Store {
 
     const boundActions = {}
 
-    Object.entries(actions).foreach(([key, reducer]) => {
+    Object.entries(actions).forEach(([key, reducer]) => {
       boundActions[key] = this._bindAction(key, reducer)
     })
 
@@ -38,15 +49,14 @@ export default class Store {
 
   _bindAction(key, reducer) {
     return payload => {
-      this._set(key, reducer(this, payload))
+      reducer(this, payload)
+      this.repo.commit()
       this._notify()
     }
   }
 
   _notify() {
-    const state = this.repo.getAll
-
-    this.listeners.forEach(f => f(state))
+    this.listeners.forEach(f => f(this))
   }
 
   _get(key) {

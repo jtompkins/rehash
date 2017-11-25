@@ -2,6 +2,13 @@ import Store from './store'
 import HashRepository from './hashRepository'
 import FakeHashRepository from './fakes/fakeHashRepository'
 
+const makeMockSerializer = () => {
+  return {
+    serialize: jest.fn(v => v),
+    deserialize: jest.fn(v => v),
+  }
+}
+
 describe(Store, () => {
   describe('constructor', () => {
     describe('when a hash repository is not provided', () => {
@@ -19,11 +26,69 @@ describe(Store, () => {
         expect(store.repo instanceof FakeHashRepository).toBeTruthy()
       })
     })
+
+    describe('when a shape is not provided', () => {
+      it('throws an error', () => {
+        expect(() => new Store(null)).toThrow()
+      })
+    })
+
+    describe('when a shape is provided', () => {
+      const TEST_KEY = 'testKey'
+      const TEST_VALUE = 'test value'
+
+      let store
+
+      beforeEach(() => {
+        store = new Store(
+          {
+            [TEST_KEY]: makeMockSerializer(),
+          },
+          new FakeHashRepository({ [TEST_KEY]: TEST_VALUE }),
+        )
+      })
+
+      it('defines a getter for each key in the shape', () => {
+        const propertyDescriptor = Object.getOwnPropertyDescriptor(
+          store,
+          TEST_KEY,
+        )
+
+        expect(propertyDescriptor).not.toBeUndefined()
+        expect(propertyDescriptor.get).not.toBeUndefined()
+      })
+
+      describe('the generated getter', () => {
+        it('returns a value from the store', () => {
+          const val = store[TEST_KEY]
+
+          expect(val).toBe(TEST_VALUE)
+        })
+      })
+
+      it('defines a setter for each key in the shape', () => {
+        const propertyDescriptor = Object.getOwnPropertyDescriptor(
+          store,
+          TEST_KEY,
+        )
+
+        expect(propertyDescriptor).not.toBeUndefined()
+        expect(propertyDescriptor.set).not.toBeUndefined()
+      })
+
+      describe('the generated setter', () => {
+        it('sets a value on the store', () => {
+          store[TEST_KEY] = 'another value'
+
+          expect(store[TEST_KEY]).toBe('another value')
+        })
+      })
+    })
   })
 
   describe('subscribe', () => {
     it('returns an ID', () => {
-      const store = new Store({})
+      const store = new Store({}, new FakeHashRepository())
 
       const id = store.subscribe(() => true)
 
@@ -31,7 +96,7 @@ describe(Store, () => {
     })
 
     it('returns different IDs for each subscriber', () => {
-      const store = new Store({})
+      const store = new Store({}, new FakeHashRepository())
 
       const firstId = store.subscribe(() => true)
       const secondId = store.subscribe(() => false)
@@ -54,9 +119,41 @@ describe(Store, () => {
 
     describe('when the ID is not registered', () => {
       it('returns false', () => {
-        const store = new Store({})
+        const store = new Store({}, new FakeHashRepository())
 
         expect(store.subscribe(1)).toBeFalsy()
+      })
+    })
+  })
+
+  describe('defineActions', () => {
+    describe('when no actions are provide', () => {
+      it('throws an error', () => {
+        const store = new Store({}, new FakeHashRepository())
+
+        expect(() => store.defineActions()).toThrow()
+      })
+    })
+
+    describe('when actions are provided', () => {
+      let mockSerializer
+
+      beforeEach(() => {
+        mockSerializer = makeMockSerializer()
+      })
+
+      it('returns a hash of bound action creators', () => {
+        const store = new Store(
+          { key: mockSerializer },
+          new FakeHashRepository(),
+        )
+
+        const actions = store.defineActions({
+          testAction: (store, payload) => (store.key = payload),
+        })
+
+        expect(actions).toHaveProperty('testAction')
+        expect(typeof actions['testAction']).toBe('function')
       })
     })
   })
@@ -79,10 +176,7 @@ describe(Store, () => {
       const TEST_VALUE = 'test value'
 
       beforeEach(() => {
-        mockSerializer = {
-          serialize: jest.fn(),
-          deserialize: jest.fn(),
-        }
+        mockSerializer = makeMockSerializer()
 
         mockRepository = new FakeHashRepository({
           [TEST_KEY]: TEST_VALUE,
@@ -136,10 +230,7 @@ describe(Store, () => {
     const TEST_VALUE = 'test value'
 
     beforeEach(() => {
-      mockSerializer = {
-        serialize: jest.fn(),
-        deserialize: jest.fn(),
-      }
+      mockSerializer = makeMockSerializer()
 
       mockRepository = {
         set: jest.fn(),
@@ -180,14 +271,25 @@ describe(Store, () => {
   })
 
   describe('_notify', () => {
-    it('calls the listeners', () => {
-      const store = new Store({}, new FakeHashRepository())
-      const listener = jest.fn()
+    let store
+    let listener
 
+    beforeEach(() => {
+      store = new Store({}, new FakeHashRepository())
+      listener = jest.fn()
       store.subscribe(listener)
+    })
+
+    it('calls the listeners', () => {
       store._notify()
 
       expect(listener.mock.calls.length).toBe(1)
+    })
+
+    it('passes the store to the listener', () => {
+      store._notify()
+
+      expect(listener.mock.calls[0][0]).toBe(store)
     })
   })
 
@@ -200,6 +302,7 @@ describe(Store, () => {
     beforeEach(() => {
       mockRepository = {
         set: jest.fn(),
+        commit: jest.fn(),
       }
 
       const mockSerializer = {
@@ -241,14 +344,10 @@ describe(Store, () => {
         expect(mockReducer.mock.calls[0][1]).toBe(TEST_PAYLOAD)
       })
 
-      it('sets the key to the return value of the reducer', () => {
+      it('calls commit on the repo after the reducer has run', () => {
         func(TEST_PAYLOAD)
 
-        const setMock = mockRepository.set.mock
-
-        expect(setMock.calls.length).toBe(1)
-        expect(setMock.calls[0][0]).toBe(TEST_KEY)
-        expect(setMock.calls[0][1]).toBe(TEST_REDUCER_RETURN_VALUE)
+        expect(mockRepository.commit.mock.calls.length).toBe(1)
       })
 
       it('notifies the listeners', () => {
