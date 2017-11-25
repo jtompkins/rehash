@@ -11,8 +11,12 @@ export default class FakeHashRepository {
     return this.cache[key]
   }
 
-  set(key) {
-    throw new Error('Method not implemented.')
+  set(key, value) {
+    this.cache[key] = value
+  }
+
+  commit() {
+    console.log('*** COMMITING HASH FRAGMENT ***')
   }
 
   reset() {
