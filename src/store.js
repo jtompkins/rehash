@@ -75,7 +75,8 @@ export default class Store {
   }
 
   _notify() {
-    this.listeners.forEach(f => f(this))
+    const state = this.getState()
+    this.listeners.forEach(f => f(state))
   }
 
   _get(key) {

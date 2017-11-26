@@ -337,10 +337,10 @@ describe(Store, () => {
       expect(listener.mock.calls.length).toBe(1)
     })
 
-    it('passes the store to the listener', () => {
+    it('passes the state to the listener', () => {
       store._notify()
 
-      expect(listener.mock.calls[0][0]).toBe(store)
+      expect(listener.mock.calls[0][0]).toEqual(store.getState())
     })
   })
 
