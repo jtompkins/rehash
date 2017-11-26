@@ -13,7 +13,6 @@ export default class Store {
     Object.entries(shape).forEach(([key, serializer]) => {
       Object.defineProperty(this, key, {
         get: () => this._get(key),
-        set: value => this._set(key, value),
       })
     })
   }

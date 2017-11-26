@@ -18,7 +18,7 @@ describe('rehash - react bindings', () => {
 
   describe('connect HOC', () => {
     it('should provide the state and subscribe to changes', () => {
-      store.message = 'hello'
+      store.setState({ message: 'hello' })
 
       const mapToProps = ({ message }) => ({ message })
       const Comp = ({ message }) => <h1>{message}</h1>
@@ -34,10 +34,14 @@ describe('rehash - react bindings', () => {
       const wrapper = mount(<App />)
 
       expect(wrapper.html()).toBe('<h1>hello</h1>')
+
+      store.setState({ message: 'bye' })
+
+      expect(wrapper.html()).toBe('<h1>bye</h1>')
     })
 
     it('should provide the actions and subscribe to changes', () => {
-      store.count = 0
+      store.setState({ count: 0 })
 
       const Comp = ({ count, increment }) => (
         <h1 onClick={increment}>{count}</h1>
@@ -68,7 +72,7 @@ describe('rehash - react bindings', () => {
     })
 
     it('should provide actions with parameters and subscribe to changes', () => {
-      store.count = 0
+      store.setState({ count: 0 })
 
       const Comp = ({ count, incrementOf }) => (
         <h1 onClick={() => incrementOf(10)}>{count}</h1>
@@ -117,7 +121,7 @@ describe('rehash - react bindings', () => {
     })
 
     it('should connect with nested children', () => {
-      store.message = 'hello'
+      store.setState({ message: 'hello' })
 
       const Comp = ({ message, children }) => (
         <div>
@@ -144,10 +148,16 @@ describe('rehash - react bindings', () => {
       expect(wrapper.html()).toBe(
         '<div>parent hello <span>child hello</span></div>',
       )
+
+      store.setState({ message: 'bye' })
+
+      expect(wrapper.html()).toBe(
+        '<div>parent bye <span>child bye</span></div>',
+      )
     })
 
     it('should connect return all state when mapToProps is not passed', () => {
-      store.message = 'Hey!'
+      store.setState({ message: 'Hey!' })
       const Comp = ({ message }) => <h1>{message}</h1>
       const ConnectedComp = connect()(Comp)
 
@@ -164,7 +174,7 @@ describe('rehash - react bindings', () => {
 
   describe('Connect component', () => {
     it('should provide the state and subscribe to changes', () => {
-      store.message = 'hello'
+      store.setState({ message: 'hello' })
 
       const mapToProps = ({ message }) => ({ message })
 
@@ -183,10 +193,14 @@ describe('rehash - react bindings', () => {
       const wrapper = mount(<App />)
 
       expect(wrapper.html()).toBe('<h1>hello</h1>')
+
+      store.setState({ message: 'bye' })
+
+      expect(wrapper.html()).toBe('<h1>bye</h1>')
     })
 
     it('should provide the actions and subscribe to changes', () => {
-      store.count = 0
+      store.setState({ count: 0 })
 
       const mapToProps = ({ count }) => ({ count })
 
@@ -216,7 +230,7 @@ describe('rehash - react bindings', () => {
     })
 
     it('should provide actions with parameters and subscribe to changes', () => {
-      store.count = 0
+      store.setState({ count: 0 })
 
       const mapToProps = ({ count }) => ({ count })
 
@@ -269,7 +283,7 @@ describe('rehash - react bindings', () => {
     })
 
     it('should connect with nested children', () => {
-      store.message = 'hello'
+      store.setState({ message: 'hello' })
 
       const mapToProps = ({ message }) => ({ message })
 
@@ -301,6 +315,12 @@ describe('rehash - react bindings', () => {
 
       expect(wrapper.html()).toBe(
         '<div>parent hello <span>child hello</span></div>',
+      )
+
+      store.setState({ message: 'bye' })
+
+      expect(wrapper.html()).toBe(
+        '<div>parent bye <span>child bye</span></div>',
       )
     })
   })

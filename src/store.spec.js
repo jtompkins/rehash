@@ -41,9 +41,7 @@ describe(Store, () => {
 
       beforeEach(() => {
         store = new Store(
-          {
-            [TEST_KEY]: makeMockSerializer(),
-          },
+          { [TEST_KEY]: makeMockSerializer() },
           new FakeHashRepository({ [TEST_KEY]: TEST_VALUE }),
         )
       })
@@ -63,24 +61,6 @@ describe(Store, () => {
           const val = store[TEST_KEY]
 
           expect(val).toBe(TEST_VALUE)
-        })
-      })
-
-      it('defines a setter for each key in the shape', () => {
-        const propertyDescriptor = Object.getOwnPropertyDescriptor(
-          store,
-          TEST_KEY,
-        )
-
-        expect(propertyDescriptor).not.toBeUndefined()
-        expect(propertyDescriptor.set).not.toBeUndefined()
-      })
-
-      describe('the generated setter', () => {
-        it('sets a value on the store', () => {
-          store[TEST_KEY] = 'another value'
-
-          expect(store[TEST_KEY]).toBe('another value')
         })
       })
     })
@@ -170,7 +150,7 @@ describe(Store, () => {
         new FakeHashRepository(),
       )
 
-      store[TEST_KEY] = TEST_VALUE
+      store.setState({ [TEST_KEY]: TEST_VALUE })
     })
 
     describe('when a key is provided', () => {

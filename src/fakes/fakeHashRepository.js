@@ -11,9 +11,7 @@ export default class FakeHashRepository {
     this.cache[key] = value
   }
 
-  commit() {
-    console.log('*** COMMITING HASH FRAGMENT ***')
-  }
+  commit() {}
 
   reset() {
     this.cache = {}
