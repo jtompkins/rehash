@@ -3,10 +3,6 @@ export default class FakeHashRepository {
     this.cache = initialValue || {}
   }
 
-  getAll() {
-    return this.cache
-  }
-
   get(key) {
     return this.cache[key]
   }
