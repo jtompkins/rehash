@@ -47,9 +47,17 @@ export default class Store {
     return boundActions
   }
 
-  getState() {
+  getState(key) {
+    if (key) {
+      if (!this.shape[key]) {
+        return null
+      } else {
+        return this._get(key)
+      }
+    }
+
     return Object.keys(this.shape).reduce((acc, next) => {
-      acc[next] = this[next]
+      acc[next] = this._get(next)
       return acc
     }, {})
   }

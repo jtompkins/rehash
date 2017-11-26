@@ -162,13 +162,33 @@ describe(Store, () => {
     const TEST_KEY = 'testKey'
     const TEST_VALUE = 'test value'
 
-    it('returns a hash containing all store state', () => {
-      const mockSerializer = makeMockSerializer()
-      const store = new Store({ [TEST_KEY]: mockSerializer })
+    let store
+
+    beforeEach(() => {
+      store = new Store(
+        { [TEST_KEY]: makeMockSerializer() },
+        new FakeHashRepository(),
+      )
 
       store[TEST_KEY] = TEST_VALUE
+    })
 
-      expect(store.getState()).toEqual({ [TEST_KEY]: TEST_VALUE })
+    describe('when a key is provided', () => {
+      it('returns the state associated with the key', () => {
+        expect(store.getState(TEST_KEY)).toEqual(TEST_VALUE)
+      })
+
+      describe('when the key is not part of the store shape', () => {
+        it('returns null', () => {
+          expect(store.getState('aKeyNotInTheShape')).toBeNull()
+        })
+      })
+    })
+
+    describe('when a key is not provided', () => {
+      it('returns a hash containing all store state', () => {
+        expect(store.getState()).toEqual({ [TEST_KEY]: TEST_VALUE })
+      })
     })
   })
 
