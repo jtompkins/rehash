@@ -2,18 +2,14 @@
 const { Store, DateSerializer, FakeHashRepository } = require('../dist/bundle')
 
 const store = new Store(
-  {
-    selectedDate: DateSerializer,
-  },
+  { selectedDate: DateSerializer },
   new FakeHashRepository(),
 )
 
 const actions = store.defineActions({
-  selectNewDate: (store, payload) => (store.selectedDate = payload),
+  selectNewDate: (state, payload) => ({ selectedDate: payload }),
 })
 
-const logger = store => console.log(`New selected date: ${store.selectedDate}`)
-
+const logger = state => console.log(`New selected date: ${state.selectedDate}`)
 store.subscribe(logger)
-
 actions.selectNewDate(new Date())
