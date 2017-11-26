@@ -2,11 +2,12 @@
   "ignore": ["node_modules/**"],
   "env": {
     "development": {
-      "presets": [["env", { "modules": false }]],
-      "plugins": ["external-helpers"]
+      "presets": [["env", { "modules": false }], "react"],
+      "plugins": ["external-helpers", "transform-class-properties"]
     },
     "test": {
-      "presets": ["env"]
+      "presets": ["env", "react"],
+      "plugins": ["transform-class-properties"]
     }
   }
 }
