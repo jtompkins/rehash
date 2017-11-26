@@ -47,6 +47,13 @@ export default class Store {
     return boundActions
   }
 
+  getState() {
+    return Object.keys(this.shape).reduce((acc, next) => {
+      acc[next] = this[next]
+      return acc
+    }, {})
+  }
+
   _bindAction(key, reducer) {
     return payload => {
       reducer(this, payload)
