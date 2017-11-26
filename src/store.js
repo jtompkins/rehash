@@ -62,11 +62,22 @@ export default class Store {
     }, {})
   }
 
+  setState(newState) {
+    if (!newState) {
+      return
+    }
+
+    Object.keys(newState).forEach(k => {
+      this._set(k, newState[k])
+    })
+
+    this.repo.commit()
+    this._notify()
+  }
+
   _bindAction(key, reducer) {
     return payload => {
-      reducer(this, payload)
-      this.repo.commit()
-      this._notify()
+      this.setState(reducer(this.getState(), payload))
     }
   }
 

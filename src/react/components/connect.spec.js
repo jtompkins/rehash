@@ -46,7 +46,7 @@ describe('rehash - react bindings', () => {
       const mapToProps = ({ count }) => ({ count })
 
       const actions = {
-        increment: store => (store.count = store.count + 1),
+        increment: state => ({ count: state.count + 1 }),
       }
 
       const ConnectedComp = connect(mapToProps, actions)(Comp)
@@ -77,7 +77,7 @@ describe('rehash - react bindings', () => {
       const mapToProps = ({ count }) => ({ count })
 
       const actions = {
-        incrementOf: (store, payload) => (store.count = store.count + payload),
+        incrementOf: (state, payload) => ({ count: state.count + payload }),
       }
 
       const ConnectedComp = connect(mapToProps, actions)(Comp)
@@ -191,7 +191,7 @@ describe('rehash - react bindings', () => {
       const mapToProps = ({ count }) => ({ count })
 
       const actions = {
-        increment: store => (store.count = store.count + 1),
+        increment: state => ({ count: state.count + 1 }),
       }
 
       const ConnectedComp = () => (
@@ -221,7 +221,7 @@ describe('rehash - react bindings', () => {
       const mapToProps = ({ count }) => ({ count })
 
       const actions = {
-        incrementOf: (store, payload) => (store.count = store.count + payload),
+        incrementOf: (state, payload) => ({ count: state.count + payload }),
       }
 
       const ConnectedComp = () => (

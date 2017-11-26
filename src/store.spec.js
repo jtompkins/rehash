@@ -192,6 +192,61 @@ describe(Store, () => {
     })
   })
 
+  describe('setState', () => {
+    const TEST_KEY = 'testKey'
+    const TEST_VALUE = 'test value'
+    const NEW_VALUE = 'new value'
+    const NOT_IN_SHAPE_KEY = 'aKeyNotInStateShape'
+
+    let mockRepository
+    let store
+
+    beforeEach(() => {
+      const backingRepository = new FakeHashRepository()
+
+      mockRepository = {
+        get: k => backingRepository.get(k),
+        set: jest.fn((k, v) => backingRepository.set(k, v)),
+        commit: jest.fn(),
+      }
+
+      store = new Store({ [TEST_KEY]: makeMockSerializer() }, mockRepository)
+    })
+
+    it('merges the new state with the existing state', () => {
+      store.setState({ [TEST_KEY]: TEST_VALUE })
+
+      expect(store.getState(TEST_KEY)).toEqual(TEST_VALUE)
+
+      store.setState({ [TEST_KEY]: NEW_VALUE })
+
+      expect(store.getState(TEST_KEY)).toEqual(NEW_VALUE)
+    })
+
+    it('notifies the listeners', () => {
+      const mockListener = jest.fn()
+      store.subscribe(mockListener)
+
+      store.setState({ [TEST_KEY]: TEST_VALUE })
+
+      expect(mockListener.mock.calls.length).toBe(1)
+    })
+
+    it('calls commit on the repo', () => {
+      store.setState({ [TEST_KEY]: TEST_VALUE })
+
+      expect(mockRepository.commit.mock.calls.length).toBe(1)
+    })
+
+    describe('when given key is not in the state shape', () => {
+      it('throws an error', () => {
+        expect(() =>
+          store.setState({ [NOT_IN_SHAPE_KEY]: NEW_VALUE }),
+        ).toThrow()
+      })
+    })
+  })
+
   describe('_get', () => {
     describe('when the key is not part of the shape of the store', () => {
       it('throws an error', () => {
@@ -334,16 +389,15 @@ describe(Store, () => {
     const TEST_PAYLOAD = 'test payload'
 
     beforeEach(() => {
+      const backingRepository = new FakeHashRepository()
+
       mockRepository = {
-        set: jest.fn(),
+        get: k => backingRepository.get(k),
+        set: jest.fn((k, v) => backingRepository.set(k, v)),
         commit: jest.fn(),
       }
 
-      const mockSerializer = {
-        serialize: jest.fn(val => val),
-      }
-
-      store = new Store({ [TEST_KEY]: mockSerializer }, mockRepository)
+      store = new Store({ [TEST_KEY]: makeMockSerializer() }, mockRepository)
     })
 
     it('creates a function', () => {
@@ -358,7 +412,9 @@ describe(Store, () => {
       const TEST_REDUCER_RETURN_VALUE = 'return value'
 
       beforeEach(() => {
-        mockReducer = jest.fn(payload => TEST_REDUCER_RETURN_VALUE)
+        mockReducer = jest.fn(payload => ({
+          [TEST_KEY]: TEST_REDUCER_RETURN_VALUE,
+        }))
         func = store._bindAction(TEST_KEY, mockReducer)
       })
 
@@ -369,27 +425,21 @@ describe(Store, () => {
       })
 
       it('passes the state and payload to the reducer', () => {
+        const previousState = store.getState()
+
         func(TEST_PAYLOAD)
 
         // the first arg to the reducer is the store
-        expect(mockReducer.mock.calls[0][0]).toBe(store)
+        expect(mockReducer.mock.calls[0][0]).toEqual(previousState)
 
         // the second arg to the reducer is the payload
         expect(mockReducer.mock.calls[0][1]).toBe(TEST_PAYLOAD)
       })
 
-      it('calls commit on the repo after the reducer has run', () => {
+      it('merges the return value of the reducer with the store state', () => {
         func(TEST_PAYLOAD)
 
-        expect(mockRepository.commit.mock.calls.length).toBe(1)
-      })
-
-      it('notifies the listeners', () => {
-        const mockListener = jest.fn()
-        store.subscribe(mockListener)
-        func()
-
-        expect(mockListener.mock.calls.length).toBe(1)
+        expect(store.getState(TEST_KEY)).toEqual(TEST_REDUCER_RETURN_VALUE)
       })
     })
   })
