@@ -45,24 +45,6 @@ describe(Store, () => {
           new FakeHashRepository({ [TEST_KEY]: TEST_VALUE }),
         )
       })
-
-      it('defines a getter for each key in the shape', () => {
-        const propertyDescriptor = Object.getOwnPropertyDescriptor(
-          store,
-          TEST_KEY,
-        )
-
-        expect(propertyDescriptor).not.toBeUndefined()
-        expect(propertyDescriptor.get).not.toBeUndefined()
-      })
-
-      describe('the generated getter', () => {
-        it('returns a value from the store', () => {
-          const val = store[TEST_KEY]
-
-          expect(val).toBe(TEST_VALUE)
-        })
-      })
     })
   })
 

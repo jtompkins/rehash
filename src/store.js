@@ -9,12 +9,6 @@ export default class Store {
     this.listeners = []
     this.shape = shape
     this.repo = hashRepository || new HashRepository(Object.keys(shape))
-
-    Object.entries(shape).forEach(([key, serializer]) => {
-      Object.defineProperty(this, key, {
-        get: () => this._get(key),
-      })
-    })
   }
 
   subscribe(func) {
