@@ -1,13 +1,21 @@
 {
   "scripts": {
-    "build": "rollup -c",
+    "format": "prettier --write \"src/**/*.js\"",
     "test": "jest",
-    "testWithDebug": "node --inspect-brk node_modules/.bin/jest --runInBand"
+    "testWithDebug": "node --inspect-brk node_modules/.bin/jest --runInBand",
+    "verify": "yarn format && yarn test",
+    "clean": "rm -rf dist",
+    "prebuild": "yarn verify && yarn clean",
+    "prepublish": "yarn build",
+    "precommit": "yarn build",
+    "build": "rollup -c",
+    "watch": "rollup -c --watch"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "enzyme": "^3.2.0",
@@ -18,24 +26,29 @@
     "eslint-plugin-react": "^7.5.1",
     "jest": "^21.2.1",
     "prettier": "^1.8.2",
-    "prop-types": "^15.6.0",
-    "react": "^16.1.1",
-    "react-dom": "^16.1.1",
     "react-test-renderer": "^16.1.1",
     "rollup": "^0.51.8",
     "rollup-plugin-babel": "^3.0.2",
-    "rollup-plugin-node-resolve": "^3.0.0"
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^2.0.1",
+    "uglify-es": "^3.2.0"
+  },
+  "dependencies": {
+    "prop-types": "^15.6.0",
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1"
   },
   "jest": {
-    "setupFiles": [
-      "<rootDir>/config/testSetup.js"
-    ]
+    "setupFiles": ["<rootDir>/config/testSetup.js"]
   },
   "name": "rehash",
-  "version": "0.1",
+  "version": "1.0.0-alpha.1",
   "description": "Lightweight Redux, for the hash fragment",
-  "main": "src/main.ts",
+  "main": "dist/bundle.js",
+  "module": "dist/bundle.es.js",
   "repository": "https://github.com/jtompkins/rehash.git",
   "author": "Joshua Tompkins <josh@joshtompkins.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "files": ["dist"]
 }
