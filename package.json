@@ -42,7 +42,7 @@
   "jest": {
     "setupFiles": ["<rootDir>/config/testSetup.js"]
   },
-  "name": "rehash",
+  "name": "rehashjs",
   "version": "1.0.0-alpha.1",
   "description": "Lightweight Redux, for the hash fragment",
   "main": "dist/bundle.js",
