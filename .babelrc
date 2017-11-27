@@ -3,11 +3,15 @@
   "env": {
     "development": {
       "presets": [["env", { "modules": false }], "react"],
-      "plugins": ["external-helpers", "transform-class-properties"]
+      "plugins": [
+        "external-helpers",
+        "transform-class-properties",
+        "transform-object-rest-spread"
+      ]
     },
     "test": {
       "presets": ["env", "react"],
-      "plugins": ["transform-class-properties"]
+      "plugins": ["transform-class-properties", "transform-object-rest-spread"]
     }
   }
 }
