@@ -52,7 +52,10 @@ export class Connect extends React.Component {
 export default function connect(mapToProps, actions = {}) {
   return Child => props => (
     <Connect mapToProps={mapToProps} actions={actions}>
-      {mappedProps => <Child {...mappedProps} {...props} />}
+      {mappedProps => {
+        debugger
+        return <Child {...mappedProps} {...props} />
+      }}
     </Connect>
   )
 }

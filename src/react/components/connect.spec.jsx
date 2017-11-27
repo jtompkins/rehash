@@ -20,6 +20,8 @@ describe('rehash - react bindings', () => {
     it('should provide the state and subscribe to changes', () => {
       store.setState({ message: 'hello' })
 
+      expect(store.getState()).toEqual({ message: 'hello', count: null })
+
       const mapToProps = ({ message }) => ({ message })
       const Comp = ({ message }) => <h1>{message}</h1>
 
