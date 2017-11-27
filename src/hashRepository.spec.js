@@ -18,28 +18,28 @@ describe(HashRepository, () => {
     ENCODED_OTHER_VALUE
   }&${UNMANAGED_KEY}=${UNMANAGED_VALUE}`
 
-  let store
+  let repo
 
   beforeEach(() => {
     global.location.hash = HASH_STRING
-    store = new HashRepository([TEST_KEY, OTHER_KEY])
+    repo = new HashRepository([TEST_KEY, OTHER_KEY])
   })
 
   describe('_parseFragment', () => {
     it('returns an object', () => {
-      const hash = store._parseFragment(global.location.hash)
+      const hash = repo._parseFragment(global.location.hash)
 
       expect(typeof hash).toBe('object')
     })
 
     it('returns the expected keys', () => {
-      const hash = store._parseFragment(global.location.hash)
+      const hash = repo._parseFragment(global.location.hash)
 
       expect(Object.keys(hash)).toEqual([TEST_KEY, OTHER_KEY, UNMANAGED_KEY])
     })
 
     it('returns the expected values', () => {
-      const hash = store._parseFragment(global.location.hash)
+      const hash = repo._parseFragment(global.location.hash)
 
       expect(Object.values(hash)).toEqual([
         TEST_VALUE,
@@ -47,26 +47,34 @@ describe(HashRepository, () => {
         UNMANAGED_VALUE,
       ])
     })
+
+    describe('when the hash fragment is empty', () => {
+      it('returns an empty object', () => {
+        global.location.hash = ''
+
+        expect(repo._parseFragment(global.location.hash)).toEqual({})
+      })
+    })
   })
 
   describe('_buildFragment', () => {
     it('returns a well-formatted hash string', () => {
-      const hash = store._parseFragment(global.location.hash)
+      const hash = repo._parseFragment(global.location.hash)
 
-      expect(store._buildFragment(hash)).toBe(HASH_STRING)
+      expect(repo._buildFragment(hash)).toBe(HASH_STRING)
     })
   })
 
   describe('#get', () => {
     describe('when the key is in the hash', () => {
       it('returns a value from the hash fragment', () => {
-        expect(store.get(TEST_KEY)).toBe(TEST_VALUE)
+        expect(repo.get(TEST_KEY)).toBe(TEST_VALUE)
       })
     })
 
     describe('when the key is not in the hash', () => {
       it('returns null', () => {
-        expect(store.get('aKeyNotInTheHash')).toBeNull()
+        expect(repo.get('aKeyNotInTheHash')).toBeNull()
       })
     })
   })
@@ -74,13 +82,13 @@ describe(HashRepository, () => {
   describe('#set', () => {
     describe('when the key is in the set of managed keys', () => {
       it('modifies the hash fragment', () => {
-        store.set(TEST_KEY, NEW_VALUE)
+        repo.set(TEST_KEY, NEW_VALUE)
 
         expect(global.location.hash.includes(encodeURI(NEW_VALUE))).toBeTruthy()
       })
 
       it('does not modify keys not managed by the repo', () => {
-        store.set(TEST_KEY, NEW_VALUE)
+        repo.set(TEST_KEY, NEW_VALUE)
 
         const hashFragment = global.location.hash
 
@@ -90,7 +98,7 @@ describe(HashRepository, () => {
 
       describe('when the value is null or undefined', () => {
         it('removes the key from the hash', () => {
-          store.set(TEST_KEY, null)
+          repo.set(TEST_KEY, null)
 
           expect(global.location.hash.includes(TEST_KEY)).toBeFalsy()
         })
@@ -99,7 +107,7 @@ describe(HashRepository, () => {
 
     describe('when the key is not managed', () => {
       it('throws an error', () => {
-        expect(() => store.set(UNMANAGED_KEY, UNMANAGED_VALUE)).toThrow()
+        expect(() => repo.set(UNMANAGED_KEY, UNMANAGED_VALUE)).toThrow()
       })
     })
   })

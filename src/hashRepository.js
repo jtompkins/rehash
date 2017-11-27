@@ -33,8 +33,13 @@ export default class HashRepository {
   commit() {} // TODO: once internal caching works, implement this
 
   _parseFragment(fragment) {
-    return fragment
-      .slice(1) // remove the #
+    let hash = fragment.startsWith('#') ? fragment.slice(1) : fragment
+
+    if (hash === '') {
+      return {}
+    }
+
+    return hash
       .split('&') // extract pairs
       .reduce((acc, next) => {
         const [key, val] = next.split('=')
