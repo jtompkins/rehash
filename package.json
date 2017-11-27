@@ -26,16 +26,16 @@
     "eslint-plugin-react": "^7.5.1",
     "jest": "^21.2.1",
     "prettier": "^1.8.2",
+    "prop-types": "^15.6.0",
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1",
     "react-test-renderer": "^16.1.1",
     "rollup": "^0.51.8",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-uglify": "^2.0.1",
-    "uglify-es": "^3.2.0",
-    "prop-types": "^15.6.0",
-    "react": "^16.1.1",
-    "react-dom": "^16.1.1"
+    "uglify-es": "^3.2.0"
   },
   "peerDependencies": {
     "prop-types": "^15.6.0",
@@ -43,15 +43,19 @@
     "react-dom": "^16.1.1"
   },
   "jest": {
-    "setupFiles": ["<rootDir>/config/testSetup.js"]
+    "setupFiles": [
+      "<rootDir>/config/testSetup.js"
+    ]
   },
   "name": "rehashjs",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "Lightweight Redux, for the hash fragment",
   "main": "dist/bundle.js",
   "module": "dist/bundle.es.js",
   "repository": "https://github.com/jtompkins/rehash.git",
   "author": "Joshua Tompkins <josh@joshtompkins.com>",
   "license": "MIT",
-  "files": ["dist"]
+  "files": [
+    "dist"
+  ]
 }
