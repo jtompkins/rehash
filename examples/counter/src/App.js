@@ -11,7 +11,7 @@ const actions = {
 
 const mapToProps = ({ count }) => ({ count })
 
-const Counter = connect(mapToProps)(({ count, increment }) => {
+const Counter = connect(mapToProps, actions)(({ count, increment }) => {
   return (
     <div>
       <h1>Count: {count || 0}</h1>
