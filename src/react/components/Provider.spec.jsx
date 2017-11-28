@@ -18,7 +18,7 @@ describe('rehash - react bindings', () => {
   })
 
   describe('Provider', () => {
-    it.only('should provide the store in the apps context', () => {
+    it('should provide the store in the apps context', () => {
       store.setState({ message: 'hello' })
 
       class Comp extends React.Component {
