@@ -28,7 +28,10 @@ export default class Store {
 
   defineActions(actions) {
     if (!actions) {
-      throw new Error('not yet implemented')
+      actions = Object.keys(this.shape).reduce((acc, key) => {
+        acc[key] = (state, payload) => ({ [key]: payload })
+        return acc
+      }, {})
     }
 
     const boundActions = {}

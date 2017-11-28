@@ -91,10 +91,13 @@ describe('Store', () => {
 
   describe('defineActions', () => {
     describe('when no actions are provide', () => {
-      it('throws an error', () => {
-        const store = new Store({}, new FakeHashRepository())
+      it('creates actions that match the shape of the store', () => {
+        const store = new Store({ key: makeMockSerializer() })
 
-        expect(() => store.defineActions()).toThrow()
+        const actions = store.defineActions()
+
+        expect(actions).toHaveProperty('key')
+        expect(typeof actions['key']).toBe('function')
       })
     })
 
