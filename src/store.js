@@ -41,16 +41,14 @@ export default class Store {
   }
 
   getState(key) {
+    const state = this.repo.get()
+
     if (key) {
-      if (!this.shape[key]) {
-        return null
-      } else {
-        return this._get(key)
-      }
+      return this._deserialize(key, state[key])
     }
 
-    return Object.keys(this.shape).reduce((acc, next) => {
-      acc[next] = this._get(next)
+    return Object.keys(this.shape).reduce((acc, key) => {
+      acc[key] = this._deserialize(key, state[key])
       return acc
     }, {})
   }
@@ -80,17 +78,15 @@ export default class Store {
     this.listeners.forEach(f => f(state))
   }
 
-  _get(key) {
+  _deserialize(key, value) {
+    if (value === undefined || value === null) {
+      return null
+    }
+
     const serializer = this.shape[key]
 
     if (!serializer) {
       throw new Error(`No serializer registered for key ${key}`)
-    }
-
-    const value = this.repo.get(key)
-
-    if (value === undefined || value === null) {
-      return null
     }
 
     const deserializedValue = serializer.deserialize(value)

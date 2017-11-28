@@ -1,6 +1,7 @@
 import Store from './store'
 import HashRepository from './hashRepository'
 import FakeHashRepository from './fakes/fakeHashRepository'
+import { F_OK } from 'constants'
 
 const makeMockSerializer = () => {
   return {
@@ -203,19 +204,18 @@ describe('Store', () => {
     })
   })
 
-  describe('_get', () => {
+  describe('_deserialize', () => {
     describe('when the key is not part of the shape of the store', () => {
       it('throws an error', () => {
         const store = new Store({}, new FakeHashRepository())
 
-        expect(() => store._get('badKey')).toThrow()
+        expect(() => store._deserialize('badKey', 'asdf')).toThrow()
       })
     })
 
     describe('when the key is part of the shape of the store', () => {
       let store
       let mockSerializer
-      let mockRepository
 
       const TEST_KEY = 'testKey'
       const TEST_VALUE = 'test value'
@@ -223,18 +223,17 @@ describe('Store', () => {
       beforeEach(() => {
         mockSerializer = makeMockSerializer()
 
-        mockRepository = new FakeHashRepository({
-          [TEST_KEY]: TEST_VALUE,
-        })
-
-        store = new Store({ [TEST_KEY]: mockSerializer }, mockRepository)
+        store = new Store(
+          { [TEST_KEY]: mockSerializer },
+          new FakeHashRepository(),
+        )
       })
 
       describe('when the key returns null', () => {
         it('returns null', () => {
           mockSerializer.deserialize.mockReturnValue(null)
 
-          const val = store._get(TEST_KEY)
+          const val = store._deserialize(TEST_KEY, TEST_VALUE)
           expect(val).toBeNull()
         })
       })
@@ -243,7 +242,7 @@ describe('Store', () => {
         it('returns null', () => {
           mockSerializer.deserialize.mockReturnValue(undefined)
 
-          const val = store._get(TEST_KEY)
+          const val = store._deserialize(TEST_KEY, TEST_VALUE)
           expect(val).toBeNull()
         })
       })
@@ -254,13 +253,13 @@ describe('Store', () => {
         })
 
         it('calls the registered deserializer', () => {
-          const val = store._get(TEST_KEY)
+          const val = store._deserialize(TEST_KEY, TEST_VALUE)
 
           expect(mockSerializer.deserialize.mock.calls.length).toBe(1)
         })
 
         it('returns the deserialized value', () => {
-          expect(store._get(TEST_KEY)).toEqual(TEST_VALUE)
+          expect(store._deserialize(TEST_KEY, TEST_VALUE)).toEqual(TEST_VALUE)
         })
       })
     })
