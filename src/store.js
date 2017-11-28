@@ -60,11 +60,12 @@ export default class Store {
       return
     }
 
-    Object.keys(newState).forEach(k => {
-      this._set(k, newState[k])
-    })
+    const serializedHash = Object.keys(newState).reduce((acc, key) => {
+      acc[key] = this._serialize(key, newState[key])
+      return acc
+    }, {})
 
-    this.repo.commit()
+    this.repo.set(serializedHash)
     this._notify()
   }
 
@@ -99,7 +100,7 @@ export default class Store {
       : deserializedValue
   }
 
-  _set(key, value) {
+  _serialize(key, value) {
     if (value === undefined || value === null) {
       return
     }
@@ -110,6 +111,6 @@ export default class Store {
       throw new Error(`No serializer registered for key ${key}`)
     }
 
-    this.repo.set(key, serializer.serialize(value))
+    return serializer.serialize(value)
   }
 }

@@ -9,7 +9,7 @@ const makeMockSerializer = () => {
   }
 }
 
-describe(Store, () => {
+describe('Store', () => {
   describe('constructor', () => {
     describe('when a hash repository is not provided', () => {
       it('uses the default implementation', () => {
@@ -194,12 +194,6 @@ describe(Store, () => {
       expect(mockListener.mock.calls.length).toBe(1)
     })
 
-    it('calls commit on the repo', () => {
-      store.setState({ [TEST_KEY]: TEST_VALUE })
-
-      expect(mockRepository.commit.mock.calls.length).toBe(1)
-    })
-
     describe('when given key is not in the state shape', () => {
       it('throws an error', () => {
         expect(() =>
@@ -272,10 +266,9 @@ describe(Store, () => {
     })
   })
 
-  describe('_set', () => {
+  describe('_serialize', () => {
     let store
     let mockSerializer
-    let mockRepository
 
     const TEST_KEY = 'testKey'
     const TEST_VALUE = 'test value'
@@ -283,16 +276,15 @@ describe(Store, () => {
     beforeEach(() => {
       mockSerializer = makeMockSerializer()
 
-      mockRepository = {
-        set: jest.fn(),
-      }
-
-      store = new Store({ [TEST_KEY]: mockSerializer }, mockRepository)
+      store = new Store(
+        { [TEST_KEY]: mockSerializer },
+        new FakeHashRepository(),
+      )
     })
 
     describe('when the input value is null', () => {
       it('does not call the serializer', () => {
-        store._set(TEST_KEY, null)
+        store._serialize(TEST_KEY, null)
 
         expect(mockSerializer.serialize.mock.calls.length).toBe(0)
       })
@@ -300,7 +292,7 @@ describe(Store, () => {
 
     describe('when the input value is undefined', () => {
       it('does not call the serializer', () => {
-        store._set(TEST_KEY, undefined)
+        store._serialize(TEST_KEY, undefined)
 
         expect(mockSerializer.serialize.mock.calls.length).toBe(0)
       })
@@ -308,15 +300,9 @@ describe(Store, () => {
 
     describe('when the input has a value', () => {
       it('calls the serializer', () => {
-        store._set(TEST_KEY, TEST_VALUE)
+        store._serialize(TEST_KEY, TEST_VALUE)
 
         expect(mockSerializer.serialize.mock.calls.length).toBe(1)
-      })
-
-      it('sets the value in the repository', () => {
-        store._set(TEST_KEY, TEST_VALUE)
-
-        expect(mockRepository.set.mock.calls.length).toBe(1)
       })
     })
   })
