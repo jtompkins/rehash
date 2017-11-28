@@ -1,4 +1,5 @@
 import HashRepository from './hashRepository'
+import { parseFragment } from './util/hashParseUtils'
 
 describe('HashRepository', () => {
   const TEST_KEY = 'testKey'
@@ -16,7 +17,7 @@ describe('HashRepository', () => {
 
   const NEW_VALUE = 'new value'
 
-  const HASH_STRING = `#${TEST_KEY}=${ENCODED_TEST_VALUE}&${OTHER_KEY}=${
+  const HASH_STRING = `#?${TEST_KEY}=${ENCODED_TEST_VALUE}&${OTHER_KEY}=${
     ENCODED_OTHER_VALUE
   }&${UNMANAGED_KEY}=${UNMANAGED_VALUE}`
 
@@ -27,43 +28,11 @@ describe('HashRepository', () => {
     repo = new HashRepository([TEST_KEY, OTHER_KEY])
   })
 
-  describe('_parseFragment', () => {
-    it('returns an object', () => {
-      const hash = repo._parseFragment(global.location.hash)
-
-      expect(typeof hash).toBe('object')
-    })
-
-    it('returns the expected keys', () => {
-      const hash = repo._parseFragment(global.location.hash)
-
-      expect(Object.keys(hash)).toEqual([TEST_KEY, OTHER_KEY, UNMANAGED_KEY])
-    })
-
-    it('returns the expected values', () => {
-      const hash = repo._parseFragment(global.location.hash)
-
-      expect(Object.values(hash)).toEqual([
-        TEST_VALUE,
-        OTHER_VALUE,
-        UNMANAGED_VALUE,
-      ])
-    })
-
-    describe('when the hash fragment is empty', () => {
-      it('returns an empty object', () => {
-        global.location.hash = ''
-
-        expect(repo._parseFragment(global.location.hash)).toEqual({})
-      })
-    })
-  })
-
   describe('_buildFragment', () => {
     it('returns a well-formatted hash string', () => {
-      const hash = repo._parseFragment(global.location.hash)
+      const { path, query } = parseFragment(global.location.hash)
 
-      expect(repo._buildFragment(hash)).toBe(HASH_STRING)
+      expect(repo._buildFragment(path, query)).toBe(HASH_STRING)
     })
 
     describe('when a null or undefined value is in the input', () => {
@@ -73,10 +42,31 @@ describe('HashRepository', () => {
           OTHER_KEY: undefined,
         }
 
-        const fragment = repo._buildFragment(hash)
+        const fragment = repo._buildFragment('', hash)
 
         expect(fragment).not.toContain(TEST_KEY)
         expect(fragment).not.toContain(OTHER_KEY)
+      })
+    })
+
+    describe('when there is a path in the hash', () => {
+      it('includes the path in the output', () => {
+        const path = '/a/path/to/somewhere'
+        const { query } = parseFragment(global.location.hash)
+
+        const fragment = repo._buildFragment(path, query)
+
+        expect(fragment).toContain(path)
+      })
+    })
+
+    describe('when there are keys in the query that are not managed', () => {
+      it('includes the non-managed keys', () => {
+        const { query } = parseFragment(global.location.hash)
+        const fragment = repo._buildFragment('', query)
+
+        expect(fragment).toContain(UNMANAGED_KEY)
+        expect(fragment).toContain(encodeURI(UNMANAGED_VALUE))
       })
     })
   })

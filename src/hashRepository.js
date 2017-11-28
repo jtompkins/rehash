@@ -1,13 +1,15 @@
+import { parseFragment } from './util/hashParseUtils'
+
 export default class HashRepository {
   constructor(managedKeys = []) {
     this.managedKeys = managedKeys
   }
 
   get() {
-    const hash = this._parseFragment(global.location.hash)
+    const { query } = parseFragment(global.location.hash)
 
     return this.managedKeys.reduce((acc, key) => {
-      acc[key] = hash[key] || null
+      acc[key] = query[key] || null
       return acc
     }, {})
   }
@@ -21,33 +23,20 @@ export default class HashRepository {
       throw new Error('Non-managed keys cannot be set')
     }
 
-    const hash = this._parseFragment(global.location.hash)
+    const { path, query } = parseFragment(global.location.hash)
 
-    global.location.hash = this._buildFragment(Object.assign(hash, state))
+    global.location.hash = this._buildFragment(
+      path,
+      Object.assign(query, state),
+    )
   }
 
-  _parseFragment(fragment) {
-    let hash = fragment.startsWith('#') ? fragment.slice(1) : fragment
-
-    if (hash === '') {
-      return {}
-    }
-
-    return hash
-      .split('&') // extract pairs
-      .reduce((acc, next) => {
-        const [key, val] = next.split('=')
-        acc[key] = decodeURI(val)
-        return acc
-      }, {})
-  }
-
-  _buildFragment(hash) {
-    const hashString = Object.entries(hash)
+  _buildFragment(path, state) {
+    const hashString = Object.entries(state)
       .filter(([key, value]) => !(value === null || value === undefined))
       .map(p => `${p[0]}=${encodeURI(p[1])}`)
       .join('&')
 
-    return `#${hashString}`
+    return `#${path}?${hashString}`
   }
 }
