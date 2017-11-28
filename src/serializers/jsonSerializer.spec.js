@@ -1,6 +1,6 @@
 import JsonSerializer from './jsonSerializer'
 
-describe(JsonSerializer, () => {
+describe('JsonSerializer', () => {
   const TEST_OBJECT = { test: 'value' }
   const TEST_JSON = JSON.stringify(TEST_OBJECT)
 
