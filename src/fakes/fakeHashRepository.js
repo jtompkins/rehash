@@ -7,11 +7,13 @@ export default class FakeHashRepository {
     return this.cache[key]
   }
 
-  set(key, value) {
-    this.cache[key] = value
-  }
+  set(state) {
+    if (typeof state !== 'object') {
+      throw new Error('Only objects can be merged into the hash')
+    }
 
-  commit() {}
+    this.cache = Object.assign(this.cache, state)
+  }
 
   reset() {
     this.cache = {}

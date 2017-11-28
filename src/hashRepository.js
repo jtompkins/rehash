@@ -10,27 +10,19 @@ export default class HashRepository {
     return val ? val : null
   }
 
-  set(key, value) {
-    if (!this.managedKeys.includes(key)) {
+  set(state) {
+    if (typeof state !== 'object') {
+      throw new Error('Only objects can be merged into the hash')
+    }
+
+    if (Object.keys(state).some(key => !this.managedKeys.includes(key))) {
       throw new Error('Non-managed keys cannot be set')
     }
 
-    const oldHash = this._parseFragment(global.location.hash)
-    let newHash
+    const hash = this._parseFragment(global.location.hash)
 
-    if (value === null || value === undefined) {
-      newHash = oldHash
-      delete newHash[key]
-    } else {
-      newHash = Object.assign(oldHash, {
-        [key]: value,
-      })
-    }
-
-    global.location.hash = this._buildFragment(newHash)
+    global.location.hash = this._buildFragment(Object.assign(hash, state))
   }
-
-  commit() {} // TODO: once internal caching works, implement this
 
   _parseFragment(fragment) {
     let hash = fragment.startsWith('#') ? fragment.slice(1) : fragment
@@ -50,6 +42,7 @@ export default class HashRepository {
 
   _buildFragment(hash) {
     const hashString = Object.entries(hash)
+      .filter(([key, value]) => !(value === null || value === undefined))
       .map(p => `${p[0]}=${encodeURI(p[1])}`)
       .join('&')
 

@@ -1,6 +1,6 @@
 import HashRepository from './hashRepository'
 
-describe(HashRepository, () => {
+describe('HashRepository', () => {
   const TEST_KEY = 'testKey'
   const TEST_VALUE = 'test value'
   const ENCODED_TEST_VALUE = encodeURI(TEST_VALUE)
@@ -63,6 +63,20 @@ describe(HashRepository, () => {
 
       expect(repo._buildFragment(hash)).toBe(HASH_STRING)
     })
+
+    describe('when a null or undefined value is in the input', () => {
+      it('is not included in the output string', () => {
+        const hash = {
+          TEST_KEY: null,
+          OTHER_KEY: undefined,
+        }
+
+        const fragment = repo._buildFragment(hash)
+
+        expect(fragment).not.toContain(TEST_KEY)
+        expect(fragment).not.toContain(OTHER_KEY)
+      })
+    })
   })
 
   describe('#get', () => {
@@ -80,15 +94,21 @@ describe(HashRepository, () => {
   })
 
   describe('#set', () => {
-    describe('when the key is in the set of managed keys', () => {
+    describe('when the input is not an object', () => {
+      it('throws an error', () => {
+        expect(() => repo.set(TEST_VALUE)).toThrow()
+      })
+    })
+
+    describe('when the keys are in the set of managed keys', () => {
       it('modifies the hash fragment', () => {
-        repo.set(TEST_KEY, NEW_VALUE)
+        repo.set({ [TEST_KEY]: NEW_VALUE })
 
         expect(global.location.hash.includes(encodeURI(NEW_VALUE))).toBeTruthy()
       })
 
       it('does not modify keys not managed by the repo', () => {
-        repo.set(TEST_KEY, NEW_VALUE)
+        repo.set({ [TEST_KEY]: NEW_VALUE })
 
         const hashFragment = global.location.hash
 
@@ -96,23 +116,19 @@ describe(HashRepository, () => {
         expect(hashFragment.includes(encodeURI(UNMANAGED_VALUE))).toBeTruthy()
       })
 
-      describe('when the value is null or undefined', () => {
+      describe('when a value is null or undefined', () => {
         it('removes the key from the hash', () => {
-          repo.set(TEST_KEY, null)
+          repo.set({ [TEST_KEY]: null })
 
           expect(global.location.hash.includes(TEST_KEY)).toBeFalsy()
         })
       })
     })
 
-    describe('when the key is not managed', () => {
+    describe('when a key is not managed', () => {
       it('throws an error', () => {
-        expect(() => repo.set(UNMANAGED_KEY, UNMANAGED_VALUE)).toThrow()
+        expect(() => repo.set({ [UNMANAGED_KEY]: UNMANAGED_VALUE })).toThrow()
       })
     })
-  })
-
-  describe('#commit', () => {
-    it('does nothing for now', () => {})
   })
 })
