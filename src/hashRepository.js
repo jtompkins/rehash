@@ -3,11 +3,13 @@ export default class HashRepository {
     this.managedKeys = managedKeys
   }
 
-  get(key) {
+  get() {
     const hash = this._parseFragment(global.location.hash)
-    const val = hash[key]
 
-    return val ? val : null
+    return this.managedKeys.reduce((acc, key) => {
+      acc[key] = hash[key] || null
+      return acc
+    }, {})
   }
 
   set(state) {

@@ -3,8 +3,8 @@ export default class FakeHashRepository {
     this.cache = initialValue || {}
   }
 
-  get(key) {
-    return this.cache[key]
+  get() {
+    return this.cache
   }
 
   set(state) {

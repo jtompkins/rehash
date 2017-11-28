@@ -12,6 +12,8 @@ describe('HashRepository', () => {
   const UNMANAGED_KEY = 'unmanagedKey'
   const UNMANAGED_VALUE = 'unmanagedValue'
 
+  const NULL_KEY = 'nullKey'
+
   const NEW_VALUE = 'new value'
 
   const HASH_STRING = `#${TEST_KEY}=${ENCODED_TEST_VALUE}&${OTHER_KEY}=${
@@ -80,16 +82,23 @@ describe('HashRepository', () => {
   })
 
   describe('#get', () => {
-    describe('when the key is in the hash', () => {
-      it('returns a value from the hash fragment', () => {
-        expect(repo.get(TEST_KEY)).toBe(TEST_VALUE)
-      })
+    it('returns the values of all of the managed keys', () => {
+      const state = repo.get()
+
+      expect(state).toHaveProperty(TEST_KEY)
+      expect(state).toHaveProperty(OTHER_KEY)
     })
 
-    describe('when the key is not in the hash', () => {
-      it('returns null', () => {
-        expect(repo.get('aKeyNotInTheHash')).toBeNull()
-      })
+    it('does not return the values for unmanaged keys', () => {
+      expect(repo.get()).not.toHaveProperty(UNMANAGED_KEY)
+    })
+
+    it('includes null values for keys not in the hash fragment', () => {
+      const repo = new HashRepository([TEST_KEY, OTHER_KEY, NULL_KEY])
+      const state = repo.get()
+
+      expect(state).toHaveProperty(NULL_KEY)
+      expect(state[NULL_KEY]).toBeNull()
     })
   })
 
