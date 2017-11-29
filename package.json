@@ -48,7 +48,7 @@
     ]
   },
   "name": "rehashjs",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "description": "Lightweight Redux, for the hash fragment",
   "main": "dist/bundle.js",
   "module": "dist/bundle.es.js",
