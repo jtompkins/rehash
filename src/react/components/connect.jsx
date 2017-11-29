@@ -30,7 +30,7 @@ export class Connect extends React.Component {
 
   getActions() {
     const { actions } = this.props
-    return actions ? this.context.store.defineActions(actions) : {}
+    return actions ? actions : {}
   }
 
   update = () => {
