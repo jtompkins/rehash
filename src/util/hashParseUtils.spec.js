@@ -28,6 +28,7 @@ describe('hashParseUtils', () => {
     const ONLY_PATH = `#${PATH}`
     const ONLY_QUERY_STRING = `#?${QUERY_STRING}`
     const PATH_AND_QUERY_STRING = `#${PATH}?${QUERY_STRING}`
+    const NO_PATH_NO_QUESTION_MARK = `#${QUERY_STRING}`
 
     describe('when the fragment is empty', () => {
       it('returns an object with default values', () => {
@@ -62,6 +63,19 @@ describe('hashParseUtils', () => {
 
         expect(hash).toHaveProperty('query')
         expect(hash['query']).toEqual({})
+      })
+    })
+
+    describe('when there is a query string with no ?', () => {
+      it('returns an empty object in the path and a query object', () => {
+        const hash = parseFragment(NO_PATH_NO_QUESTION_MARK)
+
+        expect(hash).toHaveProperty('path')
+        expect(hash['path']).toEqual('')
+
+        expect(hash).toHaveProperty('query')
+        expect(hash['query']).toHaveProperty('aKey')
+        expect(hash['query']).toHaveProperty('anotherKey')
       })
     })
   })

@@ -21,14 +21,24 @@ export const parseFragment = fragment => {
 
   const fragmentString = fragment.startsWith('#') ? fragment.slice(1) : fragment
 
+  let path = ''
+  let query = {}
+
   if (!fragmentString.includes('?')) {
-    return { path: fragmentString, query: {} }
+    if (!fragmentString.includes('=')) {
+      path = fragmentString
+    } else {
+      query = parseQueryString(fragmentString)
+    }
+  } else {
+    const parts = fragmentString.split('?')
+
+    path = parts[0]
+    query = parseQueryString(parts[1])
   }
 
-  const parts = fragmentString.split('?')
-
   return {
-    path: parts[0] || '',
-    query: parseQueryString(parts[1]),
+    path,
+    query,
   }
 }
