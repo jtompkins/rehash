@@ -1,5 +1,7 @@
 # rehash
 
+[![npm version](https://badge.fury.io/js/rehashjs.svg)](https://badge.fury.io/js/rehashjs)
+
 Rehash is a lightweight state container based on Redux. Instead of a singleton
 in-memory store, Rehash uses the browser's hash fragment to store your
 serialized state.
