@@ -14,14 +14,14 @@ serialized state.
 
 Import the necessary objects:
 
-```
+```js
 import { createStore, JsonSerializer, Provider, connect } from 'rehashjs'
 ```
 
 Create your store, specifying the shape of the state and the serializers you
 want to use:
 
-```
+```js
 const store = createStore({
   count: JsonSerializer,
 })
@@ -30,14 +30,14 @@ const store = createStore({
 If you just need to update the value of your state, with no reducer logic, you
 can have Rehash auto-generate your actions:
 
-```
+```js
 const actions = store.defineActions()
 ```
 
 ...alternatively, you can provide a set of reducers that will be called when
 your action is fired:
 
-```
+```js
 const actions = store.defineActions({
   increment: state => ({ count: state.count + 1 }),
 })
@@ -45,7 +45,7 @@ const actions = store.defineActions({
 
 You can provide a payload to the action with a second parameter:
 
-```
+```js
 const actions = store.defineActions({
   increment: state, payload => ({ count: state.count + payload }),
 })
@@ -53,7 +53,7 @@ const actions = store.defineActions({
 
 Create a "connected" component using the `connect` function:
 
-```
+```js
 const mapToProps = ({ count }) => ({ count })
 
 const Counter = connect(mapToProps, actions)(({ count, increment }) => {
@@ -73,7 +73,7 @@ app's shared state. It's passed the full state and needs to return an object.
 
 To connect the store instance to React, use the `Provider` component:
 
-```
+```js
 class App extends Component {
   render() {
     return (
@@ -91,7 +91,7 @@ Any object with a `serialize` and `deserialize` method can serve as a Rehash
 serializer. Let's make a simple serializer that transforms a `Date` object into
 an epoch string:
 
-```
+```js
 const DateSerializer = {
   deserialize: dateString => {
     return new Date(Number(dateString))
