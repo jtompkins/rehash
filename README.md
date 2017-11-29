@@ -1,9 +1,8 @@
 # rehash
 
-Rehash is a lightweight, low boilerplate Redux-alike library that uses the
-browser's hash fragment as the store. It's a good fit for applications where the
-shared state is limited to query or filter _parameters_ (the hash fragment is
-not a great place to store actual _data_).
+Rehash is a lightweight state container based on Redux. Instead of a singleton
+in-memory store, Rehash uses the browser's hash fragment to store your
+serialized state.
 
 ## Installation
 
@@ -14,14 +13,14 @@ not a great place to store actual _data_).
 Import the necessary objects:
 
 ```
-import { Store, JsonSerializer, Provider, connect } from 'rehashjs'
+import { createStore, JsonSerializer, Provider, connect } from 'rehashjs'
 ```
 
 Create your store, specifying the shape of the state and the serializers you
 want to use:
 
 ```
-const store = new Store({
+const store = createStore({
   count: JsonSerializer,
 })
 ```
@@ -65,7 +64,9 @@ const Counter = connect(mapToProps, actions)(({ count, increment }) => {
 })
 ```
 
-`mapToProps` handles extracting the values the component cares about from the
+Update the state by calling one of your actions, which are provided to your
+connected component as a React `prop`. Data is provided via the `mapToProps`
+function, which handles extracting the values the component cares about from the
 app's shared state. It's passed the full state and needs to return an object.
 
 To connect the store instance to React, use the `Provider` component:
@@ -111,13 +112,3 @@ There's a sample React app in `examples/counter`. To start it:
 
 * Async/await?
 * Middleware?
-
-## Docs
-
-* [Code of Conduct](https://www.contributor-covenant.org/version/1/4/code-of-conduct.md)
-
-## TODO
-
-1. [ ] The `Connect` component should not auto-bind the actions to the `Store`
-       instance
-1. [ ] Add a `createStore` exported function to emulate the behavior of Redux
