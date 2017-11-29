@@ -43,15 +43,19 @@
     "react-dom": "^16.1.1"
   },
   "jest": {
-    "setupFiles": ["<rootDir>/config/testSetup.js"]
+    "setupFiles": [
+      "<rootDir>/config/testSetup.js"
+    ]
   },
   "name": "rehashjs",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "description": "Lightweight Redux, for the hash fragment",
   "main": "dist/bundle.js",
   "module": "dist/bundle.es.js",
   "repository": "https://github.com/jtompkins/rehash.git",
   "author": "Joshua Tompkins <josh@joshtompkins.com>",
   "license": "MIT",
-  "files": ["dist"]
+  "files": [
+    "dist"
+  ]
 }
