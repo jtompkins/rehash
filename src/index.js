@@ -1,6 +1,6 @@
-import Store from './store'
+import createStore from './createStore'
 import DateSerializer from './serializers/dateSerializer'
 import JsonSerializer from './serializers/jsonSerializer'
-import { Provider, Connect, connect } from './react'
+import { Provider, connect } from './react'
 
-export { Store, DateSerializer, JsonSerializer, Provider, Connect, connect }
+export { createStore, DateSerializer, JsonSerializer, Provider, connect }
