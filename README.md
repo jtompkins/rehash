@@ -1,6 +1,7 @@
 # rehash
 
 [![npm version](https://badge.fury.io/js/rehashjs.svg)](https://badge.fury.io/js/rehashjs)
+[![Travis Build Status](https://travis-ci.org/jtompkins/rehash.svg?branch=master)](https://travis-ci.org/jtompkins/rehash)
 
 Rehash is a lightweight state container based on Redux and heavily inspired by
 Redux Zero. Instead of a singleton in-memory store, Rehash uses the browser's
