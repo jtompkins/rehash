@@ -53,7 +53,6 @@ export default function connect(mapToProps, actions = {}) {
   return Child => props => (
     <Connect mapToProps={mapToProps} actions={actions}>
       {mappedProps => {
-        debugger
         return <Child {...mappedProps} {...props} />
       }}
     </Connect>

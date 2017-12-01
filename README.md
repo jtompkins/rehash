@@ -30,6 +30,14 @@ const store = createStore({
 })
 ```
 
+The keys you specify in `createStore` will become part of the query string in
+the hash fragment. For example, if the store had a value of `10` for the `count`
+key, the hash fragment might look like this:
+
+```
+#?count=10
+```
+
 Rehash comes with two serializers - `DateSerializer`, which serializes `Date`s
 to epoch millisecond strings, and `JsonSerializer`, which, well, JSON-serializes
 things.
@@ -122,11 +130,11 @@ the component as React props.
 Update the state by calling one of your actions, optionally passing in a
 payload:
 
-```js
+```
 const mapStateToProps = ({ count }) => ({ count })
 
 const actions = store.defineActions({
-  increment: state, payload => ({ count: state.count + payload }),
+  increment: (state, payload) => ({ count: state.count + payload }),
 })
 
 const Counter = connect(mapStateToProps, actions)(({ count, increment }) => {
@@ -137,6 +145,31 @@ const Counter = connect(mapStateToProps, actions)(({ count, increment }) => {
     </div>
   )
 })
+```
+
+When the action is called, Rehash will run the "reducer" you specified when you
+defined the action. The object the reducer returns will be merged with the
+existing Store state and then serialized into the hash fragment.
+
+For the example above, imagine that the hash fragment looked like this:
+
+```
+#?count=10
+```
+
+After clicking the button (and firing the action) with the payload of `10`,
+Rehash will run the `increment` reducer, which returns a object that looks like
+this:
+
+```
+{ count: 20 }
+```
+
+...that object will then be passed to a serializer and the hash fragment will be
+regenerated with the new value:
+
+```
+#?count=20
 ```
 
 ### Serializers
@@ -154,6 +187,60 @@ const DateSerializer = {
     return val.getTime().toString()
   },
 }
+```
+
+## Testing
+
+When testing your connected components with something like Enzyme, the easiest
+way to render your component in the test is to also render a `Provider`
+component, passing in a test store:
+
+```
+describe('myComponent', () => {
+  describe('when we load the page', () => {
+    it('renders', () => {
+      const wrapper = mount(
+        <Provider store={store}>
+          <MyComponent />
+        </Provider>
+      )
+    })
+  })
+})
+```
+
+Rehash provides a `createFakeStore` function that creates a store backed by an
+in-memory cache and is otherwise fully functional:
+
+```
+import { createFakeStore, JsonSerializer } from 'rehashjs'
+
+const fakeStore = createFakeStore({
+  count: JsonSerializer
+})
+```
+
+Alternatively, you can isolate your component by mocking Rehash's `connect`
+function:
+
+```
+jest.mock('rehashjs', () => {
+  return {
+    connect: (mapStateToProps, actions) => component => component,
+  }
+})
+```
+
+...and then simply passing props to your component as normal:
+
+```
+describe('myComponent', () => {
+  describe('when we load the page', () => {
+    it('renders', () => {
+      const wrapper = mount(<MyComponent aProp={'aValue'} />)
+    })
+  })
+})
 ```
 
 ## Example
