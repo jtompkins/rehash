@@ -6,5 +6,5 @@ export default {
     } catch (e) {
       return ''
     }
-  }
+  },
 }
