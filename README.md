@@ -255,3 +255,10 @@ There's a sample React app in `examples/counter`. To start it:
 
 * Async/await?
 * Middleware?
+
+## Contributing
+
+1. Fork the repo, clone it, and cd into the directory.
+1. Use Node 8 (`nvm use`) and install packages (`yarn`)
+1. Add your feature... and, of course, a test for it.
+1. Run tests with `yarn test`
