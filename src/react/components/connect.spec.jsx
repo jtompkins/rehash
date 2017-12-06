@@ -1,9 +1,11 @@
 // adapted from https://raw.githubusercontent.com/concretesolutions/redux-zero/master/src/react/components/connect.spec.tsx
 
 import * as React from 'react'
-import { mount } from 'enzyme'
+import { mount, shallow } from 'enzyme'
+import PropTypes from 'prop-types'
 
-import Store from '../../store'
+import createStore from '../../createStore'
+import createFakeStore from '../../fakes/createFakeStore'
 import JsonSerializer from '../../serializers/jsonSerializer'
 import { Provider, Connect, connect } from '..'
 
@@ -11,7 +13,7 @@ describe('rehash - react bindings', () => {
   let store, listener
 
   beforeEach(() => {
-    store = new Store({ message: JsonSerializer, count: JsonSerializer })
+    store = createStore({ message: JsonSerializer, count: JsonSerializer })
     listener = jest.fn()
     store.subscribe(listener)
   })
@@ -324,6 +326,63 @@ describe('rehash - react bindings', () => {
       expect(wrapper.html()).toBe(
         '<div>parent bye <span>child bye</span></div>',
       )
+    })
+  })
+
+  describe('When testing with no Provider component', () => {
+    let fakeStore
+
+    beforeEach(() => {
+      fakeStore = createFakeStore({
+        message: JsonSerializer,
+        count: JsonSerializer,
+      })
+    })
+
+    describe('when there are no actions defined', () => {
+      it('should be able to read from Enzyme context properly', () => {
+        fakeStore.setState({ message: 'hello' })
+
+        const mapToProps = ({ message }) => ({ message })
+
+        const Comp = ({ message }) => <h1>{message}</h1>
+        const ConnectedComp = connect(mapToProps)(Comp)
+
+        const wrapper = mount(<ConnectedComp />, {
+          context: { store: fakeStore },
+          childContextTypes: { store: PropTypes.object.isRequired },
+        })
+        expect(wrapper.html()).toBe('<h1>hello</h1>')
+      })
+    })
+
+    describe('when there are actions defined', () => {
+      it('should be able to call the actions without issues', () => {
+        fakeStore.setState({ count: 0 })
+
+        const actions = fakeStore.defineActions({
+          increment: state => ({ count: state.count + 1 }),
+        })
+
+        const mapToProps = ({ count }) => ({ count })
+
+        const Comp = ({ count, increment }) => (
+          <h1 onClick={increment}>{count}</h1>
+        )
+        const ConnectedComp = connect(mapToProps, actions)(Comp)
+
+        const wrapper = mount(<ConnectedComp />, {
+          context: { store: fakeStore },
+          childContextTypes: { store: PropTypes.object.isRequired },
+        })
+
+        expect(wrapper.html()).toBe('<h1>0</h1>')
+
+        wrapper.children().simulate('click')
+        wrapper.children().simulate('click')
+
+        expect(wrapper.html()).toBe('<h1>2</h1>')
+      })
     })
   })
 })
