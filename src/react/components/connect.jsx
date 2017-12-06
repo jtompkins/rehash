@@ -30,7 +30,13 @@ export class Connect extends React.Component {
 
   getActions() {
     const { actions } = this.props
-    return actions ? actions : {}
+    const { store } = this.context
+
+    if (!actions || !store) {
+      return {}
+    }
+
+    return store.defineActions(actions)
   }
 
   update = () => {
