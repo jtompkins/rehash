@@ -360,9 +360,9 @@ describe('rehash - react bindings', () => {
       it('should be able to call the actions without issues', () => {
         fakeStore.setState({ count: 0 })
 
-        const actions = fakeStore.defineActions({
+        const actions = {
           increment: state => ({ count: state.count + 1 }),
-        })
+        }
 
         const mapToProps = ({ count }) => ({ count })
 
