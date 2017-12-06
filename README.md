@@ -46,18 +46,17 @@ things.
 
 Just like Redux, Rehash uses "actions" to modify application state. _Unlike_
 Redux, you don't have to define reducers or action creators - just tell Rehash
-what your actions are called and provide an (optional) reducer implementation.
+what your actions are called and provide a reducer implementation.
 
 ```js
-const actions = store.defineActions({
-  increment: state, payload => ({ count: state.count + payload }),
-})
+const actions = {
+  increment: (state, payload) => ({ count: state.count + payload }),
+}
 ```
 
 Your reducer implementation receives the application state when the action is
 called, but you won't have to worry about that when you're actually calling the
-action - `defineAction` curries the reducer functions for you, as we'll see
-later.
+action - the `connect` function curries the reducers for you.
 
 The return value from a Rehash reducer is _merged_ into the program state - so
 you can return the entire state, just like in Redux, or you can return only
@@ -66,9 +65,9 @@ what's changed.
 If your action doesn't have a payload, the second argument is optional:
 
 ```js
-const actions = store.defineActions({
+const actions = {
   increment: state => ({ count: state.count + 1 }),
-})
+}
 ```
 
 Many Rehash applications just need to modify the application's state, with no
@@ -76,7 +75,7 @@ business logic necessary. If that's the case, you can have Rehash auto-generate
 your actions:
 
 ```js
-const actions = store.defineActions()
+const actions = store.createActionsFromShape()
 ```
 
 The generated actions will have the same names as your state keys.
@@ -118,8 +117,7 @@ const Counter = connect(mapStateToProps)(({ count }) => {
 
 * `mapStateToProps`, which extracts values from the Rehash store to pass to the
   component and must return an object,
-* `actions`, an object containing actions used by the component (in the same
-  form returned by `store.defineActions`)
+* `actions`, an object containing actions used by the component
 
 If you don't provide `mapStateToProps`, the entire state will be passed to the
 component. The actions and the `mapStateToProps` return value will be passed to
@@ -130,12 +128,12 @@ the component as React props.
 Update the state by calling one of your actions, optionally passing in a
 payload:
 
-```
+```js
 const mapStateToProps = ({ count }) => ({ count })
 
-const actions = store.defineActions({
+const actions = {
   increment: (state, payload) => ({ count: state.count + payload }),
-})
+}
 
 const Counter = connect(mapStateToProps, actions)(({ count, increment }) => {
   return (
@@ -147,9 +145,11 @@ const Counter = connect(mapStateToProps, actions)(({ count, increment }) => {
 })
 ```
 
-When the action is called, Rehash will run the "reducer" you specified when you
-defined the action. The object the reducer returns will be merged with the
-existing Store state and then serialized into the hash fragment.
+`connect` automatically binds actions passed to it to the Rehash store, so you
+don't have to worry about passing state to the action when you call it. When the
+action is called, Rehash will run the "reducer" you specified when you defined
+the action. The object the reducer returns will be merged with the existing
+Store state and then serialized into the hash fragment.
 
 For the example above, imagine that the hash fragment looked like this:
 
@@ -172,7 +172,17 @@ regenerated with the new value:
 #?count=20
 ```
 
-### Serializers
+## Serializers
+
+Rehash provides a number of serializers out of the box:
+
+| Serializer         | `serialize`                                                            | `deserialize`                                   |
+| ------------------ | ---------------------------------------------------------------------- | ----------------------------------------------- |
+| `JsonSerializer`   | calls `JSON.stringify`                                                 | calls `JSON.parse`                              |
+| `DateSerializer`   | converts a `Date` object to a string containing millis since the epoch | safely converts an epoch string to a new `Date` |
+| `StringSerializer` | safely calls `toString()` on the input                                 | returns the input                               |
+
+### Defining your own serializer
 
 Any object with a `serialize` and `deserialize` method can serve as a Rehash
 serializer. Let's make a simple serializer that transforms a `Date` object into
