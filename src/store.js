@@ -26,21 +26,22 @@ export default class Store {
     return true
   }
 
+  createActionsFromShape() {
+    return Object.keys(this.shape).reduce((acc, key) => {
+      acc[key] = (state, payload) => ({ [key]: payload })
+      return acc
+    }, {})
+  }
+
   defineActions(actions) {
     if (!actions) {
-      actions = Object.keys(this.shape).reduce((acc, key) => {
-        acc[key] = (state, payload) => ({ [key]: payload })
-        return acc
-      }, {})
+      return {}
     }
 
-    const boundActions = {}
-
-    Object.entries(actions).forEach(([key, reducer]) => {
-      boundActions[key] = this._bindAction(key, reducer)
-    })
-
-    return boundActions
+    return Object.entries(actions).reduce((acc, [key, reducer]) => {
+      acc[key] = this._bindAction(key, reducer)
+      return acc
+    }, {})
   }
 
   getState(key) {

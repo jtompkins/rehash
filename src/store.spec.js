@@ -89,37 +89,38 @@ describe('Store', () => {
     })
   })
 
+  describe('createActionsFromShape', () => {
+    it('creates actions that match the shape of the store', () => {
+      const store = new Store({ key: makeMockSerializer() })
+
+      const actions = store.createActionsFromShape()
+
+      expect(actions).toHaveProperty('key')
+      expect(typeof actions['key']).toBe('function')
+    })
+  })
+
   describe('defineActions', () => {
-    describe('when no actions are provide', () => {
-      it('creates actions that match the shape of the store', () => {
-        const store = new Store({ key: makeMockSerializer() })
+    let store
+    let mockSerializer
 
-        const actions = store.defineActions()
-
-        expect(actions).toHaveProperty('key')
-        expect(typeof actions['key']).toBe('function')
-      })
+    beforeEach(() => {
+      mockSerializer = makeMockSerializer()
+      store = new Store({ key: mockSerializer }, new FakeHashRepository())
     })
 
-    describe('when actions are provided', () => {
-      let mockSerializer
-
-      beforeEach(() => {
-        mockSerializer = makeMockSerializer()
+    it('returns a hash of bound action creators', () => {
+      const actions = store.defineActions({
+        testAction: (store, payload) => (store.key = payload),
       })
 
-      it('returns a hash of bound action creators', () => {
-        const store = new Store(
-          { key: mockSerializer },
-          new FakeHashRepository(),
-        )
+      expect(actions).toHaveProperty('testAction')
+      expect(typeof actions['testAction']).toBe('function')
+    })
 
-        const actions = store.defineActions({
-          testAction: (store, payload) => (store.key = payload),
-        })
-
-        expect(actions).toHaveProperty('testAction')
-        expect(typeof actions['testAction']).toBe('function')
+    describe('when no actions are provided', () => {
+      it('returns an empty object', () => {
+        expect(store.defineActions()).toEqual({})
       })
     })
   })
