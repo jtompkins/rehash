@@ -195,14 +195,14 @@ When testing your connected components with something like Enzyme, the easiest
 way to render your component in the test is to also render a `Provider`
 component, passing in a test store:
 
-```
+```js
 describe('myComponent', () => {
   describe('when we load the page', () => {
     it('renders', () => {
       const wrapper = mount(
         <Provider store={store}>
           <MyComponent />
-        </Provider>
+        </Provider>,
       )
     })
   })
@@ -212,18 +212,41 @@ describe('myComponent', () => {
 Rehash provides a `createFakeStore` function that creates a store backed by an
 in-memory cache and is otherwise fully functional:
 
-```
+```js
 import { createFakeStore, JsonSerializer } from 'rehashjs'
 
 const fakeStore = createFakeStore({
-  count: JsonSerializer
+  count: JsonSerializer,
+})
+```
+
+If you want to test store integration _without_ mounting the `Provider`, you can
+create a fake store and pass it to the connected component's `context` using the
+options Enzyme provides when rendering:
+
+```js
+import { createFakeStore, JsonSerializer } from 'rehashjs'
+
+describe('myComponent', () => {
+  describe('when we load the page', () => {
+    it('renders', () => {
+      const fakeStore = createFakeStore({
+        count: JsonSerializer,
+      })
+
+      const wrapper = mount(<MyConnectedComponent />, {
+        context: { store: fakeStore },
+        childContextTypes: { store: PropTypes.object.isRequired },
+      })
+    })
+  })
 })
 ```
 
 Alternatively, you can isolate your component by mocking Rehash's `connect`
 function:
 
-```
+```js
 jest.mock('rehashjs', () => {
   return {
     connect: (mapStateToProps, actions) => component => component,
@@ -231,9 +254,9 @@ jest.mock('rehashjs', () => {
 })
 ```
 
-...and then simply passing props to your component as normal:
+...and then simply pass props to your component as normal:
 
-```
+```js
 describe('myComponent', () => {
   describe('when we load the page', () => {
     it('renders', () => {
