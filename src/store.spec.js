@@ -266,6 +266,18 @@ describe('Store', () => {
           expect(store._deserialize(TEST_KEY, TEST_VALUE)).toEqual(TEST_VALUE)
         })
       })
+
+      describe('when the serializer throws an error', () => {
+        beforeEach(() => {
+          mockSerializer.deserialize.mockImplementation(() => {
+            throw new Error('YOU DID A BAD THING')
+          })
+        })
+
+        it('returns null', () => {
+          expect(store._deserialize(TEST_KEY, TEST_VALUE)).toBeNull()
+        })
+      })
     })
   })
 
@@ -306,6 +318,18 @@ describe('Store', () => {
         store._serialize(TEST_KEY, TEST_VALUE)
 
         expect(mockSerializer.serialize.mock.calls.length).toBe(1)
+      })
+    })
+
+    describe('when the serializer throws an error', () => {
+      beforeEach(() => {
+        mockSerializer.serialize.mockImplementation(() => {
+          throw new Error('YOU DID A BAD THING')
+        })
+      })
+
+      it('returns null', () => {
+        expect(store._serialize(TEST_KEY, TEST_VALUE)).toBeNull()
       })
     })
   })
