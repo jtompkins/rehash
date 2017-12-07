@@ -93,11 +93,15 @@ export default class Store {
       throw new Error(`No serializer registered for key ${key}`)
     }
 
-    const deserializedValue = serializer.deserialize(value)
+    try {
+      const deserializedValue = serializer.deserialize(value)
 
-    return deserializedValue === undefined || deserializedValue === null
-      ? null
-      : deserializedValue
+      return deserializedValue === undefined || deserializedValue === null
+        ? null
+        : deserializedValue
+    } catch (err) {
+      return null
+    }
   }
 
   _serialize(key, value) {
@@ -111,6 +115,10 @@ export default class Store {
       throw new Error(`No serializer registered for key ${key}`)
     }
 
-    return serializer.serialize(value)
+    try {
+      return serializer.serialize(value)
+    } catch (err) {
+      return null
+    }
   }
 }
