@@ -34,7 +34,7 @@ export default class HashRepository {
   _buildFragment(path, state) {
     const hashString = Object.entries(state)
       .filter(([key, value]) => !(value === null || value === undefined))
-      .map(p => `${p[0]}=${encodeURI(p[1])}`)
+      .map(p => `${p[0]}=${encodeURIComponent(p[1])}`)
       .join('&')
 
     return `#${path}?${hashString}`
