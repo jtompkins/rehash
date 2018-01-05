@@ -132,7 +132,8 @@ describe('HashRepository', () => {
 
     describe('when value is url', () => {
       it('works', () => {
-        const testValue = 'https://my.asosservices.com/api/marketing/a-list/v2/customer/201635233/details?a=b'
+        const testValue =
+          'https://my.asosservices.com/api/marketing/a-list/v2/customer/201635233/details?a=b'
         repo.set({
           [TEST_KEY]: testValue,
         })
