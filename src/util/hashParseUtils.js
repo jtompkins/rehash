@@ -9,7 +9,7 @@ export const parseQueryString = queryString => {
     .split('&') // extract pairs
     .reduce((acc, next) => {
       const [key, val] = next.split('=')
-      acc[key] = decodeURI(val)
+      acc[key] = decodeURIComponent(val)
       return acc
     }, {})
 }

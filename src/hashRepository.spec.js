@@ -129,5 +129,20 @@ describe('HashRepository', () => {
         expect(() => repo.set({ [UNMANAGED_KEY]: UNMANAGED_VALUE })).toThrow()
       })
     })
+
+    describe('when value is url', () => {
+      it('works', () => {
+        const testValue = 'https://my.asosservices.com/api/marketing/a-list/v2/customer/201635233/details?a=b'
+        repo.set({
+          [TEST_KEY]: testValue,
+        })
+        expect(
+          global.location.hash.includes(
+            'https%3A%2F%2Fmy.asosservices.com%2Fapi%2Fmarketing%2Fa-list%2Fv2%2Fcustomer%2F201635233%2Fdetails%3Fa%3Db',
+          ),
+        )
+        expect(repo.get()[TEST_KEY]).toEqual(testValue)
+      })
+    })
   })
 })
