@@ -1,5 +1,6 @@
 import HashRepository from './hashRepository'
 import { parseFragment } from './util/hashParseUtils'
+import { randomBytes } from 'crypto'
 
 describe('HashRepository', () => {
   const TEST_KEY = 'testKey'
@@ -14,8 +15,10 @@ describe('HashRepository', () => {
   const UNMANAGED_VALUE = 'unmanagedValue'
 
   const NULL_KEY = 'nullKey'
-
   const NEW_VALUE = 'new value'
+  const URL_WITH_QUERYSTRING = 'http://example.com/details?a=b'
+  const ENCODED_URL_WITH_QUERYSTRING =
+    'http%3A%2F%2Fexample.com%2%2Fdetails%3Fa%3Db'
 
   const HASH_STRING = `#?${TEST_KEY}=${ENCODED_TEST_VALUE}&${OTHER_KEY}=${
     ENCODED_OTHER_VALUE
@@ -90,6 +93,18 @@ describe('HashRepository', () => {
       expect(state).toHaveProperty(NULL_KEY)
       expect(state[NULL_KEY]).toBeNull()
     })
+
+    describe('when a URL with a query string is in the state', () => {
+      it('reserializes properly into the original URL', () => {
+        const repo = new HashRepository([TEST_KEY])
+        repo.set({ [TEST_KEY]: URL_WITH_QUERYSTRING })
+
+        const state = repo.get()
+
+        expect(state).toHaveProperty(TEST_KEY)
+        expect(state[TEST_KEY]).toEqual(URL_WITH_QUERYSTRING)
+      })
+    })
   })
 
   describe('#set', () => {
@@ -130,19 +145,11 @@ describe('HashRepository', () => {
       })
     })
 
-    describe('when value is url', () => {
-      it('works', () => {
-        const testValue =
-          'https://my.asosservices.com/api/marketing/a-list/v2/customer/201635233/details?a=b'
-        repo.set({
-          [TEST_KEY]: testValue,
-        })
-        expect(
-          global.location.hash.includes(
-            'https%3A%2F%2Fmy.asosservices.com%2Fapi%2Fmarketing%2Fa-list%2Fv2%2Fcustomer%2F201635233%2Fdetails%3Fa%3Db',
-          ),
-        )
-        expect(repo.get()[TEST_KEY]).toEqual(testValue)
+    describe('when a URL with a querystring is added to state', () => {
+      it('properly URI encodes the URL', () => {
+        repo.set({ [TEST_KEY]: URL_WITH_QUERYSTRING })
+
+        expect(global.location.hash.includes(ENCODED_URL_WITH_QUERYSTRING))
       })
     })
   })
