@@ -19,7 +19,7 @@ export class Connect extends React.Component {
   }
 
   componentWillUnmount() {
-    this.unsubscribe(this.update)
+    this.context.store.unsubscribe(this.unsubscribe)
   }
 
   getProps() {
