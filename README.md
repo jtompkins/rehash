@@ -21,7 +21,7 @@ import { createStore, JsonSerializer, Provider, connect } from 'rehashjs'
 
 ### Creating the store
 
-To create a Rehash store, you'll need to define the state of your shape, and the
+To create a Rehash store, you'll need to define the shape of your state, and the
 serializer you want to use for each key:
 
 ```js
